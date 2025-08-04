@@ -151,9 +151,10 @@ body {
     padding-top: 20px;
     transition: width 0.3s ease;
     box-shadow: 10px 30px 20px rgba(0, 0, 0, 0.101) !important; 
-    overflow-y: 10; /* Enable scrolling for long menus */
+    overflow-y: auto; /* Enable scrolling for long menus */
     height: 100vh;
     position: sticky;
+    top: 0;
 }
 
 .sidebar.collapsed {
@@ -187,6 +188,8 @@ body {
     font-weight: 500;
     margin-left: 15px;
     flex-grow: 1;
+    white-space: nowrap; /* Prevent text wrapping */
+    transition: display 0.3s ease;
 }
 
 .nav-item:hover a,
@@ -496,130 +499,6 @@ canvas {
 }
 
 
-/* 
-.application-list {
-    margin-top: 20px;
-    background-color: var(--card-background);
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    overflow: hidden; 
-}
-
-.application-list-item {
-    display: flex;
-    align-items: center;
-    padding: 15px 20px;
-    border-bottom: 1px solid var(--border-color);
-    transition: background-color 0.2s ease;
-}
-.application-list-item:last-child {
-    border-bottom: none;
-}
-.application-list-item:hover {
-    background-color: var(--light-grey);
-}
-
-.application-list-item .status-indicator {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 15px;
-    flex-shrink: 0;
-}
-.status-indicator.approved { background-color: var(--green-color); }
-.status-indicator.under-review { background-color: var(--secondary-color); }
-.status-indicator.rejected { background-color: var(--accent-color); }
-
-.app-details {
-    flex-grow: 1;
-}
-.app-id {
-    font-weight: bold;
-    color: var(--primary-color);
-    font-size: 1.1em;
-}
-.app-name {
-    color: var(--dark-grey);
-    margin-top: 5px;
-}
-.app-date {
-    font-size: 0.9em;
-    color: var(--text-light);
-    margin-top: 5px;
-}
-.app-status {
-    font-weight: bold;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    text-transform: uppercase;
-    flex-shrink: 0; 
-}
-.app-status.approved { background-color: rgba(76, 175, 80, 0.1); color: var(--green-color); }
-.app-status.under-review { background-color: rgba(255, 152, 0, 0.1); color: var(--secondary-color); }
-.app-status.rejected { background-color: rgba(244, 67, 54, 0.1); color: var(--accent-color); }
-
-.application-table-wrapper {
-  max-height: 350px;
-  overflow-y: auto;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  background: #fff;
-  margin-top: 15px;
-  border: 1px solid var(--border-color);
-}
-
-.application-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 600px;
-}
-
-.application-table thead {
-  position: sticky;
-  top: 0;
-  background-color: var(--primary-color);
-  color: white;
-  z-index: 1;
-}
-
-.application-table th, .application-table td {
-  padding: 15px;
-  text-align: left;
-  font-size: 0.95em;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.application-table tr:hover {
-  background-color: #f9f9f9;
-}
-
-.status-badge {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 0.8em;
-  display: inline-block;
-  text-transform: uppercase;
-}
-
-.status-approved { background: rgba(76, 175, 80, 0.1); color: #4caf50; }
-.status-under-review { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
-.status-rejected { background: rgba(244, 67, 54, 0.1); color: #f44336; }
-
-.assign-btn {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 6px 14px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-.assign-btn:hover {
-  background-color: var(--primary-dark);
-} */
-
 .content-section {
   display: none;
   margin-top: 30px;
@@ -694,7 +573,7 @@ canvas {
   background-color: #0b5ed7;
 }
 
-@media (max-width: 1500px) {
+@media (max-width: 1370px) {
     .dashboard-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -713,9 +592,29 @@ canvas {
     .sidebar {
         /* Make sidebar sticky but allow main content to scroll independently */
         position: sticky;
-        top: 0;
-        height: 100vh; /* Keep sidebar full height */
+        width: var(--sidebar-collapsed-width);
+        height: 95vh; /* Keep sidebar full height */
     }
+
+    .sidebar.expanded {
+        width: var(--sidebar-width);
+    }
+    
+    .sidebar.expanded .nav-item a,
+    .sidebar.expanded .nav-section-title {
+        display: block;
+    }
+    
+    .sidebar.expanded .nav-item {
+        justify-content: flex-start;
+        padding: 12px 20px;
+    }
+
+    .sidebar .nav-item a,
+    .sidebar .nav-section-title {
+        display: none;
+    }
+
     .dashboard-content{
         overflow-y: scroll;
     }
@@ -734,7 +633,8 @@ canvas {
     .sidebar.expanded { /* For mobile toggle */
         width: var(--sidebar-width);
         position: fixed;
-        height: 100%;
+        margin-top: 65px;
+        height: 92vh;
         z-index: 101;
         box-shadow: 0 0 10px rgba(0,0,0,0.3);
     }
@@ -750,9 +650,15 @@ canvas {
     }
     .sidebar.expanded .nav-item {
         justify-content: flex-start;
+        padding: 12px 20px;
     }
     .sidebar.expanded .nav-item .mdi {
         margin-right: 15px;
+    }
+
+    .sidebar .nav-item a,
+    .sidebar .nav-section-title {
+        display: none;
     }
 
     .dashboard-grid {
@@ -774,6 +680,10 @@ canvas {
         margin-left: 0;
     }
     
+    .menu-toggle {
+        display: block;
+    }
+
     
 }
 
@@ -795,16 +705,25 @@ canvas {
         grid-template-columns: 1fr; /* Single column layout on very small screens */
     }
 
-    .chart-card.full-width,
     .chart-card.large-width {
         grid-column: 1 / -1; /* Ensure they take full width */
     }
+    .chart-body-flex {
+        flex-direction: column;
+    }
+    .chart-body-flex canvas {
+        margin-bottom: 20px;
+    }
+    .chart-legend {
+        margin-left: 0;
+    }
     .sidebar {
         position: fixed; /* Make sidebar overlay on mobile */
-        left: -var(--sidebar-width); /* Off-screen by default */
+        left: -250px; /* Off-screen by default */
         top: 0;
         bottom: 0;
-        height: 100%;
+        margin-top: 65px;
+        height: 92vh;
         z-index: 102;
         transition: left 0.3s ease;
         box-shadow: none; /* Remove initial shadow */
@@ -813,10 +732,15 @@ canvas {
         left: 0;
     }
     .main-content {
-        margin-left: 0; /* No margin when sidebar is overlay */
+        margin-left: 0;
+        padding: 20px; /* No margin when sidebar is overlay */
     }
     body.sidebar-open {
         overflow: hidden; /* Prevent body scroll when sidebar is open */
+    }
+    .sidebar.expanded .nav-item a,
+    .sidebar.expanded .nav-section-title {
+        display: block;
     }
 }
 

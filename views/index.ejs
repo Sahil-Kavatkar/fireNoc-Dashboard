@@ -6,7 +6,7 @@
     <title>Fire NOC Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.x/css/materialdesignicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/style2.css">
 </head>
 <body>
     <div class="dashboard-container">
@@ -191,7 +191,7 @@
                 <div id="rejected-list" class="application-list"></div>
             </div> -->
             <div id="inprocess-content" class="content-section ">
-            <h2>All Applications</h2>
+            <h2>In process Applications</h2>
             <br>
             <div class="table-container">
                 <table class="app-table">
@@ -505,7 +505,51 @@
             alert('Assignment failed');
         }
         }
+        
 
+        document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.querySelector('.menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+        const body = document.body;
+
+        menuToggle.addEventListener('click', function() {
+            // Check screen width to determine behavior
+            if (window.innerWidth <= 768) {
+                // Mobile behavior: toggle overlay
+                sidebar.classList.toggle('expanded');
+                body.classList.toggle('sidebar-open');
+            } else if (window.innerWidth <= 1350) {
+                // Medium screen behavior: toggle expanded state
+                sidebar.classList.toggle('expanded');
+                // The CSS already handles the collapsed state when 'expanded' is not present
+            } else {
+                // Desktop behavior: toggle collapse
+                sidebar.classList.toggle('collapsed');
+                // Optional: Adjust main content margin to match sidebar size
+                if (sidebar.classList.contains('collapsed')) {
+                    mainContent.style.marginLeft = 'var(--sidebar-collapsed-width)';
+                } else {
+                    mainContent.style.marginLeft = 'var(--sidebar-width)';
+                }
+            }
+        });
+        
+        // Add a click listener to the main content to close the sidebar on mobile
+        mainContent.addEventListener('click', function() {
+            if (window.innerWidth <= 768 && sidebar.classList.contains('expanded')) {
+                sidebar.classList.remove('expanded');
+                body.classList.remove('sidebar-open');
+            }
+        });
+
+        // Set initial state on page load
+        if (window.innerWidth <= 1350 && window.innerWidth > 768) {
+            // On medium screens, start with sidebar collapsed
+            sidebar.classList.add('collapsed');
+        }
+        
+    });
          </script>
     <!-- <script src="data/applications.js"></script>
     <script src="js/charts.js"></script>
