@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire NOC Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <div class="header-left">
+                <button class="menu-toggle">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+                <div class="logo">
+                    <span class="mdi mdi-fire"></span> FIRE NOC DASHBOARD
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="search-bar">
+                    <span class="mdi mdi-magnify"></span>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="header-icons">
+                    <span class="mdi mdi-bell-outline"></span>
+                    <div class="user-avatar">
+                       <i class="fas fa-user-circle" style="font-size: 40px;"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="main1">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item">
+                        <span class="mdi mdi-view-dashboard"></span>
+                        <a href="/">Dashboard</a>
+                    </li>
+                    <li class="nav-item" data-category="inprocess">
+                        <span class="mdi mdi-file-document-multiple"></span>
+                        <a href="#inprocess">In Process</a>
+                    </li>
+                    <li class="nav-item" data-category="under-review">
+                        <span class="mdi mdi-clock-outline"></span>
+                        <a href="#under-review">Under Review</a>
+                    </li>
+                    <li class="nav-item" data-category="approved">
+                        <span class="mdi mdi-check-circle-outline"></span>
+                        <a href="#approved">Approved</a>
+                    </li>
+                    <li class="nav-item" data-category="rejected">
+                        <span class="mdi mdi-close-circle-outline"></span>
+                        <a href="#rejected">Rejected</a>
+                    </li>
+                    <li class="nav-section-title">SUPPORT</li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="main-content">
+            <div id="dashboard-content" class="content-section active">
+                <div class="dashboard-grid">
+                    <div class="card stat-card">
+                        <div class="card-content">
+                            <div class="stath">
+                            <div class="stat-value"><%= formatted["Under Review"] %></div>
+                            <div class="stat-icon bg-orange"><span class="mdi mdi-progress-clock"></span></div>
+                            </div>
+                            <div class="stat-label">Under Review</div>
+                            <div class="stat-meta">Awaiting inspector review</div>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="card-content">
+                            <div class="stath">
+                            <div class="stat-value"><%= formatted["In process"] %></div>
+                            <div class="stat-icon bg-red"><span class="mdi mdi-file-clock-outline"></span></div>
+                            </div>
+                            <div class="stat-label">In Process</div>
+                            <div class="stat-meta negative">Inspection and paperwork ongoing</div>
+                        </div>
+                        
+                    </div>
+                    <div class="card stat-card">
+                        <div class="card-content">
+                            <div class="stath">
+                            <div class="stat-value"><%= formatted["Approved"] %></div>
+                            <div class="stat-icon bg-green"><span class="mdi mdi-check-circle"></span></div>
+                            </div>
+                            <div class="stat-label">Approved Applications</div>
+                            <div class="stat-meta positive">Met criteria</div>
+                        </div>
+                        
+                    </div>
+                    <div class="card stat-card">
+                        <div class="card-content">
+                            <div class="stath">
+                            <div class="stat-value"><%= formatted["Rejected"] %></div>
+                            <div class="stat-icon bg-blue"><span class="mdi mdi-close-circle"></span></div>
+                            </div>
+                            <div class="stat-label">Rejected Applications</div>
+                            <div class="stat-meta3">Applications fail to meet criteria</div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="card chart-card large-width">
+                        <div class="card-header">
+                            <h3>Applications Over Time</h3>
+                        </div>
+                        
+                        <div class="card-body">
+                            <canvas id="applicationsOverTimeChart"></canvas>
+                        </div>
+                        <div class="card-footer">
+                            <div class="footer-stat">
+                                <span class="footer-value"><%= formatted["Under Review"] %></span>
+                                <span class="footer-label">Requested</span>
+                            </div>
+                            <div class="footer-stat">
+                                <span class="footer-value"><%= formatted["In process"]+formatted["Rejected"]+formatted["Approved"] %></span>
+                                <span class="footer-label">Took Action</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card ">
+                        <div class="card-header">
+                            <h3>NOC Status Distribution</h3>
+                        </div>
+                        <div class="card-body chart-body-flex">
+                            <canvas id="statusDistributionChart"></canvas>
+                            <div class="chart-legend">
+                                <div class="legend-item"><span class="legend-color-box" style="background-color: #4CAF50;"></span> Approved <span class="percentage positive"><%= formatted["Approved"] %></span></div>
+                                <div class="legend-item"><span class="legend-color-box" style="background-color: #FFC107;"></span> Under Review <span class="percentage positive"><%= formatted["Under Review"] %></span></div>
+                                <div class="legend-item"><span class="legend-color-box" style="background-color: #F44336;"></span> Rejected <span class="percentage negative"><%= formatted["Rejected"] %></span></div>
+                                <div class="legend-item"><span class="legend-color-box" style="background-color: #0095f9;"></span> In process <span class="percentage negative"><%= formatted["In process"] %></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card traffic-sources">
+                        <div class="card-header">
+                            <h3>Inspection Officer</h3>
+                        </div>
+                        <div class ="officers-card">
+                        
+                            <% users.forEach(user => { %>
+                                <div class="inspector-card">
+                                    <h4><i class="fa-solid fa-user" style="color: #013257; margin-right: 4px;"></i><%= user.name %></h4>
+                                    <p><strong>ID:</strong> <%= user.employeeId %><i class="fa-solid fa-phone" style="color: #003761; margin-left: 7px;margin-right: 5px;"></i><strong>Phone:</strong> <%= user.phone %></p>
+                                    <!-- <p></p> -->
+                                </div>
+                            <% }) %>
+                        
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- <div class="application-table-wrapper">
+            <table class="application-table">
+                <thead>
+                <tr>
+                    <th>App ID</th>
+                    <th>Building Name</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                    <th>Assign</th>
+                </tr>
+                </thead>
+                <tbody id="all-applications-list"></tbody>
+            </table>
+            </div>
+
+            <div id="under-review-content" class="content-section">
+                <h2>Under Review Applications</h2>
+                <div id="under-review-list" class="application-list"></div>
+            </div>
+            <div id="approved-content" class="content-section">
+                <h2>Approved Applications</h2>
+                <div id="approved-list" class="application-list"></div>
+            </div>
+            <div id="rejected-content" class="content-section">
+                <h2>Rejected Applications</h2>
+                <div id="rejected-list" class="application-list"></div>
+            </div> -->
+            <div id="inprocess-content" class="content-section ">
+            <h2>All Applications</h2>
+            <br>
+            <div class="table-container">
+                <table class="app-table">
+                <thead>
+                    <tr>
+                    <th>ID</th>
+                    <th>Building Name</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="inprocess-list"></tbody>
+                </table>
+            </div>
+            </div>
+
+            <div id="under-review-content" class="content-section">
+            <h2>Under Review Applications</h2><br>
+            <div class="table-container">
+                <table class="app-table">
+                <thead>
+                    <tr>
+                    <th>ID</th>
+                    <th>Building Name</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="under-review-list"></tbody>
+                </table>
+            </div>
+            <div id="officerModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <h3>Select Officer</h3>
+                <ul id="officer-list"></ul>
+            </div>
+            </div>
+            </div>
+
+            <div id="approved-content" class="content-section">
+            <h2>Approved Applications</h2><br>
+            <div class="table-container">
+                <table class="app-table">
+                <thead>
+                    <tr>
+                    <th>ID</th>
+                    <th>Building Name</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="approved-list"></tbody>
+                </table>
+            </div>
+            </div>
+
+            <div id="rejected-content" class="content-section">
+            <h2>Rejected Applications</h2><br>
+            <div class="table-container">
+                <table class="app-table">
+                <thead>
+                    <tr>
+                    <th>ID</th>
+                    <th>Building Name</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="rejected-list"></tbody>
+                </table>
+            </div>
+            </div>
+        </main>
+        
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    const applicationsOverTimeData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    datasets: [{
+        label: 'Applications Received',
+        data: [65, 59, 80, 81, 56, 55, 70, 90, 70, 120, 130, 140], // Sample data for each month
+        fill: true,
+        backgroundColor: 'rgba(36, 68, 251, 0.2)', // var(--primary-color) with alpha
+        borderColor: '#3366FF', // var(--primary-color)
+        tension: 0.4,
+        pointBackgroundColor: '#3366FF',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: '#3366FF'
+    }]
+            };
+
+     async function fetchStatusDistributionData() {
+        try {
+        const response = await fetch('/api/buildings/status-distribution');
+        const data = await response.json();
+
+        return {
+            labels: ['Approved', 'Under Review', 'Rejected', 'In process'],
+            datasets: [{
+            data: [
+                data['Approved'],
+                data['Under Review'],
+                data['Rejected'],
+                data['In process']
+                ],
+                backgroundColor: ['#4CAF50', '#FFC107', '#F44336', '#03A9F4'],
+                hoverOffset: 4
+           }]
+            };
+            } catch (error) {
+             console.error('Failed to fetch status distribution:', error);
+             return null;
+            }
+     }
+
+
+            // Chart options
+            const commonChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false // We'll handle legend manually for custom look
+                    }
+                }
+            };
+
+            // Function to initialize charts
+            async function initializeCharts() {
+                // Line chart remains same
+                const applicationsOverTimeCtx = document.getElementById('applicationsOverTimeChart').getContext('2d');
+                new Chart(applicationsOverTimeCtx, {
+                    type: 'line',
+                    data: applicationsOverTimeData,
+                    options: {
+                        ...commonChartOptions,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+
+                // Donut chart from backend
+                const statusDistributionCtx = document.getElementById('statusDistributionChart').getContext('2d');
+                const dynamicData = await fetchStatusDistributionData();
+
+                if (dynamicData) {
+                    new Chart(statusDistributionCtx, {
+                        type: 'doughnut',
+                        data: dynamicData,
+                        options: {
+                            ...commonChartOptions,
+                            cutout: '70%',
+                        }
+                    });
+                }
+            }
+
+
+        //     const applications = [
+        //     { id: "NOC-001", name: "Skyline Towers", address: "123 MG Road, Mumbai", status: "approved" },
+        //     { id: "NOC-002", name: "Sunset Residency", address: "56 Palm Street, Pune", status: "under-review" },
+        //     { id: "NOC-003", name: "Green Valley Complex", address: "89 Hill View, Nashik", status: "rejected" },
+        //     { id: "NOC-004", name: "Ocean Pearl", address: "78 Marine Drive, Mumbai", status: "approved" },
+        //     { id: "NOC-005", name: "Hilltop Residency", address: "22 Forest Lane, Lonavala", status: "under-review" }
+        // ];
+
+        // function renderApplications(category) {
+        // const listId = `${category}-list`;
+        // const listContainer = document.getElementById(listId);
+        // if (!listContainer) return;
+
+        // listContainer.innerHTML = "";
+
+        // const filtered = category === "all" ? applications : applications.filter(app => app.status === category);
+
+        // filtered.forEach(app => {
+        //     const tr = document.createElement("tr");
+        //     tr.innerHTML = `
+        //     <td>${app.id}</td>
+        //     <td>${app.name}</td>
+        //     <td>${app.address}</td>
+        //     <td><span class="status-badge status-${app.status}">${app.status.replace("-", "")}</span></td>
+        //     ${category === "under-review" 
+        // ? `<td><button class="assign-btn">Assign</button></td>` 
+        // : `<td><strong>Done</strong> <i class="fas fa-check-circle fa-lg" style="color: green; margin-left: 5px;"></i></td>`}
+
+        //     `;
+        //     listContainer.appendChild(tr);
+        // });
+        // }
+        async function fetchAndRenderApplications(category = "inprocess") {
+        const res = await fetch(`/api/buildings/${category}`);
+        if (!res.ok) {
+        console.error(`Failed to fetch data for category: ${category}`);
+        return;
+      }
+        const applications = await res.json();
+
+        const listContainer = document.getElementById(`${category}-list`);
+        listContainer.innerHTML = '';
+
+        applications.forEach(app => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td>${app.buildingId}</td>
+            <td>${app.name}</td>
+            <td>${app.address.street}, ${app.address.city}</td>
+            <td><span class="status-badge status-${app.nocStatus}">${app.nocStatus.replace("-", "")}</span></td>
+            ${category === "under-review"
+            ? `<td><button class="assign-btn" data-id="${app._id}" data-name="${app.name}">Assign</button></td>` 
+            : `<td><strong>Done</strong> <i class="fas fa-check-circle fa-lg" style="color: green; margin-left: 5px;"></i></td>`}
+            `;
+            listContainer.appendChild(tr);
+        });
+        }
+       
+        document.addEventListener("DOMContentLoaded", () => {
+            const navItems = document.querySelectorAll(".nav-item");
+            const contentSections = document.querySelectorAll(".content-section");
+
+            if (typeof initializeCharts === 'function') {
+                initializeCharts();
+            }
+
+            navItems.forEach(item => {
+            item.addEventListener("click", () => {
+                // Set active nav
+                navItems.forEach(i => i.classList.remove("active"));
+                item.classList.add("active");
+
+                // Show correct content
+                const category = item.dataset.category;
+                contentSections.forEach(section => section.classList.remove("active"));
+                document.getElementById(`${category}-content`).classList.add("active");
+
+                // Populate table
+                fetchAndRenderApplications(category);
+            });
+            });
+
+            // Default load
+            fetchAndRenderApplications();
+        });
+
+        let currentBuildingId = null;
+
+        document.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('assign-btn')) {
+            currentBuildingId = e.target.dataset.id;
+            const res = await fetch('/api/users/officers');
+            const officers = await res.json();
+            
+            const officerList = document.getElementById('officer-list');
+
+            officerList.innerHTML = '';
+
+            officers.forEach(officer => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <strong>${officer.name}</strong> -   ${officer.employeeId}
+                <button onclick="assignOfficer('${officer._id}')">Assign</button>
+            `;
+            officerList.appendChild(li);
+            });
+
+            // document.getElementById('officerModal').style.display = 'flex';
+            const modal = document.getElementById('officerModal');
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1'; 
+
+        }
+        });
+
+        function closeModal() {
+        
+        document.getElementById('officerModal').style.display = 'none';
+
+        }
+
+        async function assignOfficer(officerId) {
+        console.log("Assign clicked for:", officerId);
+        const res = await fetch('/api/assign/officer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ officerId, buildingId: currentBuildingId })
+        });
+
+        if (!res.ok) {
+        console.error(`Failed to assign officer: ${res.statusText}`);
+        return;
+        }
+
+        const result = await res.json();
+        if (result.success) {
+            alert('Assigned successfully');
+            closeModal();
+            location.reload();
+            fetchAndRenderApplications();
+        } else {
+            alert('Assignment failed');
+        }
+        }
+
+         </script>
+    <!-- <script src="data/applications.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/main.js"></script> -->
+
+    
+
+</body>
+</html>
