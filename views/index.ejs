@@ -36,9 +36,11 @@
         <aside class="sidebar">
             <nav class="sidebar-nav">
                 <ul>
-                    <li class="nav-item">
+                    <li class="nav-item" data-category="dash">
                         <span class="mdi mdi-view-dashboard"></span>
-                        <a href="/">Dashboard</a>
+                        <a href="/" class="text-link">
+                        Dashboard
+                        </a>
                     </li>
                     <li class="nav-item" data-category="inprocess">
                         <span class="mdi mdi-file-document-multiple"></span>
@@ -392,7 +394,7 @@
         //     listContainer.appendChild(tr);
         // });
         // }
-        async function fetchAndRenderApplications(category = "inprocess") {
+        async function fetchAndRenderApplications(category ="dash") {
         const res = await fetch(`/api/buildings/${category}`);
         if (!res.ok) {
         console.error(`Failed to fetch data for category: ${category}`);
@@ -443,7 +445,7 @@
             });
 
             // Default load
-            fetchAndRenderApplications();
+            fetchAndRenderApplications("dash");
         });
 
         let currentBuildingId = null;
